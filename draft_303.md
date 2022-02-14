@@ -53,7 +53,24 @@ La collection et sélection des articles pertinents pour la revue de littératur
 
 #### Application aux données cliniques
 
-Les méthodes jugées pertinentes pour le problème clinique décrit par la revue de littérature seront appliquées aux données issues d'une banque de 759 patients pris en charge au sein de la Structure d'Urgences de l'Hôpital Pellegrin (CHU de Bordeaux) entre janvier 2017 et décembre 2019, ayant bénéficié d'un scanner corps entier et n'ayant pas présenté de signe de défaillance vitale à l'admission aux urgences. La classification des résultats de tomodensitométrie selon la présence de lésions significatives a été préalablement réalisée par deux experts en aveugle, avec arbitrage par un troisième expert en cas de désaccord.
+Les méthodes jugées pertinentes pour le problème clinique décrit par la revue de littérature seront appliquées aux données issues d'une banque de 759 patients pris en charge au sein de la Structure d'Urgences de l'Hôpital Pellegrin (CHU de Bordeaux) entre janvier 2017 et décembre 2019.
+
+Les critères d'inclusion sont les patients majeurs, ayant bénéficié d'un scanner corps entier et n'ayant pas présenté de signe de défaillance vitale à l'admission aux urgences. Les critères de non-inclusion sont l'absence d'anamnèse disponible, la réalisation d'un scanner initial dans un autre centre pour le même traumatisme.
+
+La classification des résultats de tomodensitométrie selon la présence de lésions significatives a été préalablement réalisée par deux experts en aveugle, avec arbitrage par un troisième expert en cas de désaccord.
+
+Les données ont été extraites depuis le logiciel métier DxCare. Les variables recueillies sont :
+
+- variables démographiques : âge, sexe
+- description du mécanisme : cinétique d'impact, type de mécanisme (véhicule ou chute), éjection, autre passager décédé, port d'un casque, d'une ceinture de sécurité, déclenchement de l'airbag, tonneaux,
+- terrain : âge, sexe, grossesse, prise d'antiagrégants, prise d'anticoagulants, insuffisance cardiaque, coronaropathie, insuffisance respiratoire, notion de trouble de l'hémostase, 
+- mesures nécessaires à la prise en charge : déclenchement du Service Mobile d'Urgence et de Réanimation (SMUR), 
+- lésions cliniques préhospitalières : volet thoracique, traumatisme pénétrant, suspicion clinique de lésion du bassin, ischémie aigue, fracture ouverte
+- lésions cliniques à l'admission aux urgences aux étages céphalique, facial, cervical, thoracique, abdominal, bassin, membres inférieurs
+- paramètres vitaux à l'admission : score de Glasgow, fréquence cardiaque, pression artérielle systolique et diastolique, fréquence respiratoire, saturation en O2, débit d'oxygène si prescrit
+- lésions tomodensitométriques : présence d'au moins une lésion significative, nombre de lésions décrites, présence d'une lésion significative à chaque étage, score AIS maximal à chaque étage, score ISS total
+
+Les analyses statistiques seront réalisées sous language R.
 
 ### Références
 
