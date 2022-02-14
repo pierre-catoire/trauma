@@ -1,0 +1,384 @@
+---
+title: "Lettre d'intention - Mémoire M2 Biostatistiques"
+author: "Pierre Catoire"
+date: "10/01/2022"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(lava)
+library(papeR)
+library(dplyr)
+library(visdat)
+library(kableExtra)
+df = read.csv("~/Cozy/data_cozy/Code/TRAUMA/trauma.csv")
+```
+
+## Introduction
+
+### Contexte
+
+#### Définitions
+
+
+Le traumatisme sévère est défini comme l'exposition à un agent vulnérant mécanique, dont l'intensité est susceptible d'entraîner un décès ou des séquelles physiques significatives. Cette intensité est actuellement évaluée par un ensemble de critères dits de Vittel. L'évaluation des lésions chez le sujet traumatisé est la pierre angulaire de la prise en charge, puisqu'elle nécessite d'être réalisée à la fois de manière exhaustive pour ne pas méconnaître une lésion nécessitant un traitement chirurgical ou médical, et de minimiser le délai entre survenue du traumatisme et évaluation pour optimiser l'efficacité du traitement.
+
+#### Prise en charge de référence du traumatisé sévère
+
+Les patients traumatisés sévères sont classiquement d'abord distingués en trois groupes suivant l'état hémodynamique :
+
+- Groupe 1 : état hémodynamique stable sans nécessité de manoeuvre de réanimation
+- Groupe 2 : état hémodynamique stabilisé par manoeuvres de réanimation
+- Groupe 3 : état hémodynamique instable malgré manoeuvres de réanimation
+
+La prise en charge classique des traumatisés sévères dépend de ces groupes :
+
+- Pour les patients du groupe 3, il est nécessaire d'identifier l'origine du saignement par des explorations radiologiques sommaires (radiographies et échographie), le patient ne pouvant être transporté vers le scanner.
+- Pour les patients des groupes 1 et 2, la référence de l'évaluation des lésions traumatiques est le scanner corps entier (SCE), consistant en l'acquisition d'images tomodensitométriques  au niveau de la tête, face, cou, rachis, abdomen, bassin et partie supérieure des membres inférieurs.
+
+Cette référence est cependant discutée pour les traumatismes sévères du groupe 1. En effet, les critères de Vittel sont supposés trop larges et conduisant à une sur-exploration des patients, exposant à un risque radiologique et à une surcharge des centres spécialisés en traumatologie. Des études ont montré une prévalence importante des lésions tomodensitométriques y compris parmi les patients de groupe 1, de près de 50%. Néanmoins, plusieurs experts contestent la significativité de ces lésions, dont la plupart sont supposées non pertinentes pour modifier la prise en charge, et dont l'identification ne présente pas d'intérêt clinique.
+
+### Importance de l'étude
+
+L'estimation, parmi les patients traumatisés sévères de groupe 1, du risque de présence de lésions tomodensitométriques significatives, c'est-à-dire de lésions dont l'identification modifie la prise en charge du patient, pourrait permettre d'identifier les patients chez qui un SCE parait futile. Par ailleurs, une alternative au SCE pourrait être un scanner segmentaire (SSG), qui limiterait l'exposition radiologique du patient en restreignant l'acquisition des images à un segment :
+
+- tête, face et rachis cervical
+- thorax et rachis thoracique
+- abdomen, bassin, rachis lombaire et partie supérieure des membres inférieurs
+
+### Buts de l'étude
+
+L'objectif principal de l'étude est le développement d'un outil d'estimation de la probabilité de lésion tomodensitométrique significative à partir des données disponibles pour le clinicien à la prise de décision d'imagerie (terrain, éléments cinétiques, paramètres vitaux, signes cliniques) chez les patients traumatisés sévères de groupe 1. Cet outil serait idéalement utilisable malgré des données manquantes, correspondant à la pratique clinique.
+
+## Méthodes
+
+### Objectifs de l'étude
+
+Objectif principal :
+
+- Prédire la probabilité de lésion tomodensitométrique significative à partir des données cliniques chez les patients traumatisés sévères de groupe 1
+
+Objectifs secondaires :
+
+- Identifier les facteurs prédictifs de lésion significative tomodensitométrique à partir des données de l'anamnèse et de l'examen clinique
+- Identifier des sous-groupes de patients chez qui la probabilité de lésion isolée est suffisante pour justifier une imagerie segmentaire
+- Prédire le score ISS à partir des données de l'anamnèse et de l'examen clinique
+- Comparer la performance de différentes structures de variables latentes
+
+### Recueil des données
+
+Les données ont été extraites à partir du registre des patients admis au sein de la Structure d'Urgence de l'hôpital Pellegrin (CHU Bordeaux, France) durant l'année 2017.
+
+Les critères d'inclusion sont :
+
+- Patient ayant bénéficié d'un SCE
+- Non transféré depuis une autre structure
+- Majeur (> 18 ans)
+- Appartenant au groupe 1, défini comme :
+  - PAS > 90 mmHg ou PAM < 65 à l'admission, ou nécessité de support vasopresseur ou de remplissage préhospitalier supérieur à 1L
+  - GCS > 13
+  - SpO2 < 90% malgré oxygénothérapie ou recours à une ventilation mécanique
+
+### Définition de la significativité des lésions
+
+Les lésions décrites selon le thésaurus de l'Abreviated Injury Scale (AIS, cf. infra) ont été classées par deux experts indépendants comme significatives (LS) ou non significatives (LNS). Une lésion était significative si la connaissance de cette lésion par le clinicien devait entraîner un changement de stratégie diagnostique ou thérapeutique. En cas de désaccord entre cliniciens, l'avis d'un troisième expert indépendant était retenu.
+
+### Echelles
+
+#### Score de Glasgow (GCS)
+Le score de Glasgow est une échelle d'évaluation de l'état de conscience, étendue de 3 (absence de signe de conscience) à 15 (état de conscience normal). Elle correspond à la somme de l'évaluation de trois variables :
+
+- Réponse oculaire (de 1 à 4) :
+  - 1 : absence de réponse oculaire
+  - 2 : ouverture des yeux à la douleur
+  - 3 : ouverture des yeux à la demande verbale
+  - 4 : ouverture des yeux spontanée
+- Réponse verbale (de 1 à 5) :
+  - 1 : absence de réponse verbale
+  - 2 : réponse verbale incompréhensible
+  - 3 : réponse verbale incohérente
+  - 4 : réponse verbale confuse
+  - 5 : réponse verbale normale
+- Réponse motrice (de 1 à 6) :
+  - 1 : absence de réponse motrice
+  - 2 : mouvement de décérébration à la douleur
+  - 3 : mouvement de décortication à la douleur
+  - 4 : mouvement de retrait stéréotypé à la douleur
+  - 5 : mouvement de retrait adapté à la douleur
+  - 6 : mouvement adapté à l'ordre
+
+#### Abreviated Injury Scale (AIS)
+
+L'Abreviated Injury Scale est une échelle de sévérité d'une lésion anatomique. Elle est décrite dans un répertoire présentant un thésaurus des lésions pouvant être décrites, avec pour chacune d'entre elle un score AIS entre 1 (lésion mineure) et 6 (lésion constamment mortelle).
+
+#### Injury Severity Scale (ISS)
+
+L'ISS est un score décrivant la gravité des lésions suite à un traumatisme, variant de 0 à 75. Il est défini comme la somme des carrés des scores AIS maximaux parmi six appareils : tête, face, cou, thorax, abdomen, rachis, membres. Par exemple, un patient ayant deux lésions thoraciques l'une AIS 2 et l'autre AIS 3, deux lésions abdominales l'une AIS 5 et l'autre AIS 1, une lésion céphalique AIS 2, une lésion de la jambe gauche AIS 4. Le score ISS sera $ISS = 5^2 + 4^2 + 3^2 = 50$. Ce score est directement lié à la mortalité (avec des réserves pour les AIS faibles). On considère qu'un traumatisme est grave si le score ISS est supérieur à 15.
+
+### Description des variables
+
+> **Abréviations :**
+> 
+> - 2R : véhicule deux roues motorisé (hors scooter)
+> - VL : véhicule léger (voiture)
+> - PL : Poids Lourd
+
+- Identité :
+  - ID : identifiant du patient
+  - SEXE (quali bin.) : sexe
+  - AGE : âge du patient
+- Mécanisme vulnérant :
+  - CINETIQUE (quanti.) : vitesse estimée (km/h)
+  - MECANISME : description du mécanisme (chute de hauteur, AVP avec type de véhicule ...)
+  - GROSSESSE (quali bin.) : grossesse de la patiente
+  - EJECTE (quali bin.) : victime éjectée de son véhicule
+  - DECEDE (quali bin.) : autre victime décédée
+  - CASQUE (quali bin.) : port d'un casque (pour AVP 2R / scooter / vélo)
+  - CEINTURE (quali bin.) : port d'une ceinture (pour AVP VL / PL)
+  - AIRBAG (quali bin.) : déclenchement des airbags (pour AVP VL / PL)
+  - TONNEAUX (quali bin.) : tonneaux suite à l'accident (pour AVP VL / PL)
+- Signes préhospitaliers de sévérité
+  - SMUR (quali bin.) : déclenchement d'une équipe médicalisée préhospitalière
+  - AMPUTATION (quali bin.) : amputation de membre
+  - VOLET (quali bin.) : volet thoracique
+  - PENETRANT (quali bin.) : traumatisme pénétrant du tronc
+  - MEDULLAIRE (quali bin.) : suspicion clinique de lésion médullaire
+  - BASSINSUSPECT (quali bin.) : suspicion clinique de lésion du bassin
+  - ISCHEMIEAIGUE (quali bin.) : suspicion clinique d'ischémie aigue de membre
+  - OUVERTE (quali bin.) : mise en évidence d'une fracture ouverte
+- Signes cliniques à l'admission
+  - CLINHEAD (quali bin.) : existence d'une lésion clinique au niveau de la tête
+  - CLINFACE (quali bin.) : existence d'une lésion clinique au niveau de la face
+  - CLINNECK (quali bin.) : existence d'une lésion clinique au niveau du cou
+  - CLINTHORAX (quali bin.) : existence d'une lésion clinique au niveau du thorax
+  - CLINABDO (quali bin.) : existence d'une lésion clinique au niveau de l'abdomen
+  - CLINSPINE (quali bin.) : existence d'une lésion clinique au niveau du rachis
+  - CLINMS (quali bin.) : existence d'une lésion clinique au niveau des membres supérieurs
+  - CLINBASSIN (quali bin.) : existence d'une lésion clinique au niveau du bassin
+  - CLINMI (quali bin.) : existence d'une lésion clinique au niveau des membres inférieurs
+- Terrain :
+  - ICARD (quali bin.) : insuffisance cardiaque
+  - CORO (quali bin.) : coronaropathie
+  - IRESP (quali bin.) : insuffisance respiratoire
+  - ATCDHEMOSTASE (quali bin.) : antécédent connu de trouble de l'hémostase
+  - TBLEHEMOSTASE (quali bin.) : antécédent connu de trouble de l'hémostase et/ou antiagrégant et/ou anticoagulant
+  - AAP (quali bin.) : prise d'anti-agrégants
+  - TAC (quali bin.) : prise d'anticoagulants
+- Signes vitaux à l'admission
+  - GCS (quanti discr.) : Score de Glasgow (de 3 à 15)
+  - FC (quanti cont.) : Fréquence cardiaque (battements par minute)
+  - PAS (quanti cont.) : Pression artérielle systolique (mmHg)
+  - PAD (quanti cont.) : Pression artérielle diastolique (mmHg)
+  - FR (quanti cont.) : Fréquence respiratoire (battements par minute)
+  - SPO2  (quanti cont.) : Saturation pulsée en oxygène (%)
+  - QO2 (quanti cont.) : Débit d'oxygène délivré (L/min)
+  - HYPOXEMIE (quali bin.) : existence d'une hypoxémie, définie comme SpO2 < 94% et/ou nécessité d'O2 (QO2 > 0)
+- Lésions tomodensitométriques :
+  - MAXAISHEAD (ordinale) : score AIS maximal parmi les lésions de la tête
+  - MAXAISFACE (ordinale) : score AIS maximal parmi les lésions de la face
+  - MAXAISNECK (ordinale) : score AIS maximal parmi les lésions du cou
+  - MAXAISTHORAX (ordinale) : score AIS maximal parmi les lésions du thorax
+  - MAXAISABDO (ordinale) : score AIS maximal parmi les lésions de l'abdomen
+  - MAXAISSPINE (ordinale) : score AIS maximal parmi les lésions du rachis
+  - MAXAISMS (ordinale) : score AIS maximal parmi les lésions des membres supérieurs
+  - MAXAISBASSIN (ordinale) : score AIS maximal parmi les lésions du bassin
+  - MAXAISMI (ordinale) : score AIS maximal parmi les lésions des membres inférieurs
+  - ISS (quali discr.) : score ISS suite à la tomodensitométrie
+  
+## Objectifs de l'étude
+
+Objectif principal :
+
+- Développer un outil de prédiction du risque de lésion tomodensitométrique significative à partir des données de l'anamnèse et de l'examen clinique, robuste aux variables manquantes lors de la prédiction
+
+Objectifs secondaires :
+
+- Prédire le score ISS à partir des données de l'anamnèse et de l'examen clinique
+- Identifier des sous-groupes de patients chez qui la probabilité de lésion isolée est suffisante pour justifier une imagerie segmentaire
+
+```{r table_prep, include = F}
+varFactors = c("INCLUSION",
+            "SEXE",
+            "MECANISME",
+            "GROSSESSE",
+            "EJECTE",
+            "DECEDE",
+            "CASQUE",
+            "CEINTURE",
+            "AIRBAG",
+            "TONNEAUX",
+            "SMUR",
+            "AMPUTATION",
+            "VOLET",
+            "PENETRANT",
+            "MEDULLAIRE",
+            "BASSINSUSPECT",
+            "ISCHEMIEAIGUE",
+            "OUVERTE",
+            "CLINHEAD",
+            "CLINFACE",
+            "CLINNECK",
+            "CLINTHORAX",
+            "CLINABDO",
+            "CLINSPINE",
+            "CLINMS",
+            "CLINBASSIN",
+            "CLINMI",
+            "ICARD",
+            "CORO",
+            "IRESP",
+            "ATCDHEMOSTASE",
+            "TBLEHEMOSTASE",
+            "AAP",
+            "TAC",
+            "HYPOXIE",
+            "SIGNIFICATIVECT_FINAL")
+
+varIntegers = c("ID",
+             "AGE",
+             "CINETIQUE",
+             "GCS",
+             "FC",
+             "PAS",
+             "PAD",
+             "FR",
+             "SPO2",
+             "QO2",
+             "NLESIONS",
+             "MAXAISHEAD",
+             "MAXAISFACE",
+             "MAXAISNECK",
+             "MAXAISTHORAX",
+             "MAXAISABDO",
+             "MAXAISSPINE",
+             "MAXAISMS",
+             "MAXAISMI",
+             "ISS")
+
+varCinetique = c("CINETIQUE",
+              "MECANISME",
+              "EJECTE",
+              "DECEDE",
+              "CASQUE",
+              "CEINTURE",
+              "AIRBAG",
+              "TONNEAUX")
+
+varPrehosp = c("SMUR",
+            "AMPUTATION",
+            "VOLET",
+            "PENETRANT",
+            "MEDULLAIRE",
+            "BASSINSUSPECT",
+            "ISCHEMIEAIGUE",
+            "OUVERTE")
+
+varTerrain = c("AGE",
+               "SEXE",
+               "GROSSESSE",
+               "ICARD",
+               "CORO",
+               "IRESP",
+               "ATCDHEMOSTASE",
+               "TBLEHEMOSTASE",
+               "AAP",
+               "TAC")
+
+varParamadm = c("GCS",
+                "FC",
+                "PAS",
+                "PAD",
+                "FR",
+                "SPO2",
+                "QO2",
+                "HYPOXIE")
+
+varClinadm = c("CLINHEAD",
+                "CLINFACE",
+                "CLINNECK",
+                "CLINTHORAX",
+                "CLINABDO",
+                "CLINSPINE",
+                "CLINMS",
+                "CLINBASSIN",
+                "CLINMI")
+
+varMaxAIS = c("MAXAISHEAD",
+              "MAXAISFACE",
+              "MAXAISNECK",
+              "MAXAISTHORAX",
+              "MAXAISABDO",
+              "MAXAISSPINE",
+              "MAXAISMS",
+              "MAXAISMI")
+
+vars=list(factors = varFactors,
+          integers = varIntegers,
+          cinetique = varCinetique,
+          prehosp = varPrehosp,
+          terrain = varTerrain,
+          paramadm = varParamadm,
+          clinadm = varClinadm,
+          maxais = varMaxAIS)
+
+df[,vars$factors] = lapply(df[,vars$factors],as.factor)
+df[,vars$integers] = lapply(df[,vars$integers],as.integer)
+dfi = df[df$INCLUSION=="INCLUS",]
+```
+
+#### Description des données
+
+Parmi les `r nrow(df)` sujets initialement évalués, `r nrow(dfi)` sujets sont inclus pour analyse. Les patients sont exclus pour :
+
+- âge inférieur à 18 ans (N = `r nrow(df[df$INCLUSION == "MINEUR",])`)
+- absence d'examen clinique décrit (N = `r nrow(df[df$INCLUSION == "PASEXAMCLINIQUE",])`)
+- transfert depuis un autre centre (N = `r nrow(df[df$INCLUSION == "TRANSFERT",])`)
+
+Les caractéristiques des sujets sont décrits au tableaux 1 et 2.
+
+
+```{r description, echo=FALSE}
+papeR::summarize(dfi,type=c("factor")) %>%
+  kable(caption = "Caractéristiques des sujets de l'études - variables qualitatives") %>% 
+  kable_classic()
+```
+
+```{r description2,echo=F}
+papeR::summarize(dfi,type=c("numeric")) %>%
+  kable(caption = "Caractéristiques des sujets de l'études - variables quantitatives") %>% 
+  kable_classic()
+```
+
+
+```{r hist_ais, echo=F}
+par(mfrow = c(2,3))
+hist(dfi$MAXAISHEAD)
+hist(dfi$MAXAISFACE)
+hist(dfi$MAXAISNECK)
+hist(dfi$MAXAISTHORAX)
+hist(dfi$MAXAISABDO)
+hist(dfi$MAXAISSPINE)
+```
+
+On observe que les lésions avec AIS élevé correspondent essentiellement aux lésions thoraciques.
+
+#### Description des données manquantes
+
+
+```{r missing_vis,echo=F}
+vis_dat(dfi[,vars$cinetique])
+vis_dat(dfi[,vars$prehosp])
+vis_dat(dfi[,vars$terrain])
+vis_dat(dfi[,vars$paramadm])
+vis_dat(dfi[,vars$clinadm])
+vis_dat(dfi[,vars$maxais])
+```
+
+On retrouve des données manquantes essentiellement concernant les données de cinétique. Parmi les lésions cliniques préhospitalières, seule la présence du SMUR sur les lieux du traumatisme possède des valeurs manquantes (par construction, puisque les autres données cliniques préhospitalières sont considérées comme suffisamment sévères pour avoir nécessairement été rapportées dans l'observation clinique si elles étaient présentes).
+
+De même, parmi les données de terrain, les comorbidités cardiovasculaires et respiratoires ne portent pas de donnée manquante par construction, puisque l'absence d'indication de comorbidité était considérée comme indiquant l'absence de cette comorbidité. La gravidité ne porte pas de données manquantes (un test de grossesse était systématiquement réalisé pour toute femme en âge de procréer). La présence de troubles de l'hémostase innés ou acquis, médicamenteux ou non, porte des valeurs manquantes.
+
+Les paramètres cliniques à l'admission portent également des valeurs manquantes. On peut supposer que l'absence de recueil de ces paramètres puisse être lié à la gravité du patient, puisque le clinicien n'aurait pas pris le temps de renseigner ces paramètres lorsque l'état clinique du patient requérait sa présence. Les points d'appel cliniques n'ont pas de valeur manquante par construction (les patients sans anamnèse ayant été exclus). Enfin, les résultats du scanner ne portent pas de valeur manquante, par construction également.
