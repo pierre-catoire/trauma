@@ -1,3 +1,4 @@
 ## Revue de littérature
 
-Requête : "prediction"AND("missing data"OR"missing predictors"OR"missing variables"OR"missing covariables")AND"out of sample"
+Requête :(("missing")AND"out of sample prediction")OR("missing predictor")
+N = 9020
